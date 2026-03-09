@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">Resource Management</h2>
+
+            <div class="card p-4 mb-4">
+                <h5 class="fw-bold mb-3">Add New Resource</h5>
+                <form action="/api/admin/resources" method="post" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="name" class="form-control" placeholder="Resource Name" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="resourceType" class="form-control">
+                            <option value="RESEARCH_PAPER">Research Paper</option>
+                            <option value="DATASET">Dataset</option>
+                            <option value="GUIDE">Guide</option>
+                            <option value="TEMPLATE">Template</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="domain" class="form-control" placeholder="Target Domain">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Add</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card p-4">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Domain</th>
+                            <th>Added By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="res : ${resources}">
+                            <td th:text="${res.name}">Title</td>
+                            <td th:text="${res.resourceType}">Type</td>
+                            <td th:text="${res.domain}">Domain</td>
+                            <td th:text="${res.uploadedBy != null ? res.uploadedBy.name : 'System'}">User</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+
+    <main class="main-content">
+        <div class="container-fluid">
+            <div class="card p-5 max-w-800 mx-auto">
+                <h2 class="mb-4 fw-bold text-primary">Submit New Project Idea</h2>
+                <p class="text-muted mb-4">Our AI will automatically detect domains and suggest suitable mentors.</p>
+
+                <form th:action="@{/projects/submit}" method="post">
+                    <div class="mb-4">
+                        <label for="title" class="form-label fw-bold">Project Title</label>
+                        <input type="text" class="form-control form-control-lg" id="title" name="title" required
+                            placeholder="Enter a descriptive title">
+                    </div>
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-bold">Project Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="6" required
+                            placeholder="Describe your project idea in detail. Include technologies, goals, and expected outcomes."></textarea>
+                    </div>
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg">Analyze & Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

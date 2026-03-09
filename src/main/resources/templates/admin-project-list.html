@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">Project Approvals</h2>
+            <div class="card p-4">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Mentor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="project : ${projects}">
+                            <td th:text="${project.student.user.name}">Student</td>
+                            <td th:text="${project.title}">Title</td>
+                            <td><span class="badge bg-secondary" th:text="${project.status}">Status</span></td>
+                            <td th:text="${project.mentor != null ? project.mentor.user.name : 'Unassigned'}">Mentor
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

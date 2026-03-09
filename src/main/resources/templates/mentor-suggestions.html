@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+
+    <main class="main-content">
+        <div class="container-fluid">
+            <div th:if="${param.requested}" class="alert alert-success alert-dismissible fade show" role="alert">
+                Mentorship request submitted successfully! The professor will review your project.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <h2 class="mb-4 fw-bold">Mentor Suggestions</h2>
+            <div class="card p-4 mb-4 glass-panel">
+                <h4 class="fw-bold" th:text="${project.title}">Project Title</h4>
+                <p th:text="${project.description}">Project Description</p>
+                <div class="mt-3">
+                    <span class="badge bg-info me-2" th:each="domain : ${domains}" th:text="${domain}">Domain</span>
+                </div>
+            </div>
+
+            <h4 class="fw-bold mb-4">Recommended Mentors (AI Ranked)</h4>
+            <div class="row g-4">
+                <div class="col-md-4" th:each="mentor : ${mentors}">
+                    <div class="card p-4 h-100">
+                        <h5 class="fw-bold text-primary" th:text="${mentor.professor.user.name}">Professor Name</h5>
+
+                        <div class="mb-3">
+                            <p class="text-muted small mb-1">
+                                <strong>Department:</strong> <span
+                                    th:text="${mentor.professor.department}">Department</span>
+                            </p>
+                            <p class="text-muted small mb-1">
+                                <strong>Active Mentees:</strong> <span th:text="${mentor.menteeCount}">0</span>
+                            </p>
+                            <p class="text-muted small mb-0">
+                                <strong>Expertise:</strong> <span
+                                    th:text="${mentor.professor.expertiseDomains}">Domains</span>
+                            </p>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>Similarity Score:</span>
+                                <span class="badge bg-success" th:text="${mentor.score}">0</span>
+                            </div>
+                            <form method="post"
+                                th:action="@{'/projects/' + ${project.projectId} + '/request-mentor/' + ${mentor.professorId}}">
+                                <button type="submit" class="btn btn-primary w-100">Request Mentorship</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(mentors)}">
+                    <p class="text-muted">No suitable mentors found for these domains.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

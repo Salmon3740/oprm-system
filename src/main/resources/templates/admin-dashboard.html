@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">Admin Dashboard</h2>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card p-4 text-center">
+                        <h3 class="text-primary fw-bold" th:text="${userCount}">0</h3>
+                        <p class="text-muted">Total Users</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4 text-center">
+                        <h3 class="text-success fw-bold" th:text="${projectCount}">0</h3>
+                        <p class="text-muted">Total Projects</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4 text-center">
+                        <h3 class="text-info fw-bold" th:text="${resourceCount}">0</h3>
+                        <p class="text-muted">Resources</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-4 text-center">
+                        <h3 class="text-danger fw-bold" th:text="${logCount}">0</h3>
+                        <p class="text-muted">System Logs</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <div class="card p-4">
+                        <h4 class="fw-bold mb-4">System Alerts</h4>
+                        <div class="alert alert-info py-2" th:each="notification : ${recentNotifications}">
+                            <small th:text="${notification.message}">System alert message...</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - OPRM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-card {
+            background: white;
+            padding: 48px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 8px;
+            background: #1e3c72;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #2a5298;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .badge-hint {
+            font-size: 0.72rem;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <span style="font-size:2.5rem;">🎓</span>
+            <h2 class="fw-bold text-primary mt-2">OPRM Login</h2>
+            <p class="text-muted small">Online Project Resource Management</p>
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-danger py-2 small">
+            <i class="bi bi-exclamation-triangle me-1"></i> Invalid ID or password. Please try again.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success py-2 small">
+            <i class="bi bi-check-circle me-1"></i> You have been logged out successfully.
+        </div>
+        <div th:if="${error}" class="alert alert-danger py-2 small" th:text="${error}"></div>
+        <div th:if="${message}" class="alert alert-success py-2 small" th:text="${message}"></div>
+
+        <div th:if="${secretKey}" class="alert alert-warning py-3 mb-4 shadow-sm"
+            style="border-left: 4px solid #ffc107;">
+            <h6 class="fw-bold mb-1 text-dark"><i class="bi bi-key-fill text-warning me-1"></i> Please Save Your Secret
+                Key</h6>
+            <p class="small text-muted mb-2">This is your unique account recovery key. Save it securely. You will need
+                it to reset your password if you ever forget it.</p>
+            <div class="user-select-all bg-white p-2 border rounded font-monospace text-center fw-bold fs-5 text-dark"
+                th:text="${secretKey}"></div>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="loginId" class="form-label fw-semibold">
+                    Registration No. / Faculty ID
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                    <input type="text" class="form-control" id="loginId" name="username" required
+                        placeholder="e.g. REG/2024/001 or FAC/CS/001" autocomplete="username"
+                        style="text-transform:uppercase;">
+                </div>
+                <small class="badge-hint mt-1 d-inline-block">
+                    Use your Registration Number (students) or Faculty ID (professors)
+                </small>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="password" name="password" required
+                        placeholder="••••••••" autocomplete="current-password">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a th:href="@{/forgot-password}" class="text-decoration-none text-muted fw-medium d-block mb-2">Forgot
+                Password?</a>
+        </div>
+
+        <hr class="my-3">
+        <p class="text-center text-muted small mb-0">
+            Don't have an account? <a th:href="@{/register}" class="fw-semibold">Register here</a>
+        </p>
+        <p class="text-center text-muted" style="font-size:0.7rem; margin-top:8px;">
+            <i class="bi bi-info-circle"></i> Seeded accounts can still log in with their email address.
+        </p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

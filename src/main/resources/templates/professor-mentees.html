@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold text-success">Current Mentees</h2>
+            <div class="card p-4">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Project Title</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="project : ${mentees}">
+                            <td th:text="${project.student.user.name}">Student Name</td>
+                            <td th:text="${project.title}">Project Title</td>
+                            <td>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar" role="progressbar"
+                                        th:style="'width: ' + ${project.progressPercent} + '%;'"
+                                        th:aria-valuenow="${project.progressPercent}" aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                                </div>
+                                <small th:text="${project.progressPercent} + '%'"></small>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                    th:classappend="${project.status.name() == 'COMPLETED' ? 'bg-success' : 'bg-primary'}"
+                                    th:text="${project.status}">Status</span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/projects/' + ${project.projectId}}"
+                                    class="btn btn-sm btn-outline-primary">View Progress</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(mentees)}">
+                            <td colspan="5" class="text-center text-muted">No active mentees assigned yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Error - OPRM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .error-card {
+            background: white;
+            padding: 48px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: #1e3c72;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background: #2a5298;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-card">
+        <div class="error-icon">
+            <i class="bi bi-exclamation-octagon"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-3">Oops! Something went wrong.</h2>
+
+        <p class="text-muted mb-4" th:if="${status != null and error != null}">
+            <strong th:text="${status}">500</strong> - <span th:text="${error}">Internal Server Error</span>
+        </p>
+
+        <p class="text-muted small mb-4" th:if="${message != null and message != ''}" th:text="${message}">
+            An unexpected error occurred.
+        </p>
+
+        <p class="text-muted small mb-4" th:if="${status == 404 and (message == null or message == '')}">
+            The page you are looking for could not be found.
+        </p>
+
+        <a href="/" class="btn-primary">
+            <i class="bi bi-house-door me-1"></i> Return Home
+        </a>
+    </div>
+</body>
+
+</html>

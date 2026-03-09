@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold text-primary">Pending Project Requests</h2>
+            <div class="card p-4">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Title</th>
+                            <th>Detected Domains</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="request : ${pendingRequests}">
+                            <td th:text="${request.student.user.name}">Student Name</td>
+                            <td th:text="${request.title}">Project Title</td>
+                            <td th:text="${request.detectedDomains}">Domains</td>
+                            <td>
+                                <form th:action="@{'/professor/accept-mentorship/' + ${request.projectId}}"
+                                    method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-success shadow-sm">Accept
+                                        Mentorship</button>
+                                </form>
+                                <a th:href="@{'/projects/' + ${request.projectId}}"
+                                    class="btn btn-sm btn-outline-primary ms-2">Details</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pendingRequests)}">
+                            <td colspan="4" class="text-center text-muted">No pending requests found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

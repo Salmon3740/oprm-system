@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register - OPRM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            padding: 40px 20px;
+        }
+
+        .register-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 620px;
+        }
+
+        .brand-icon {
+            font-size: 2.5rem;
+            color: #1e3c72;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 2px solid #e9ecef;
+            margin: 24px 0;
+        }
+
+        .domain-grid {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .domain-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1.5px solid #dee2e6;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+            margin: 3px;
+            user-select: none;
+        }
+
+        .domain-chip:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .domain-chip input[type=checkbox] {
+            display: none;
+        }
+
+        .domain-chip.selected {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .step-badge {
+            width: 28px;
+            height: 28px;
+            background: #1e3c72;
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-card">
+        <div class="text-center mb-4">
+            <div class="brand-icon mb-2">🎓</div>
+            <h2 class="fw-bold text-primary">Join OPRM</h2>
+            <p class="text-muted small">Online Project Resource Management System</p>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger mb-3" th:text="${error}"></div>
+
+        <form th:action="@{/register}" method="post" id="registerForm">
+
+            <!-- Step 1: Basic Info -->
+            <div class="mb-3">
+                <label class="fw-semibold d-block mb-2">
+                    <span class="step-badge">1</span>Account Type
+                </label>
+                <div class="d-flex gap-3">
+                    <div class="form-check form-check-inline p-3 border rounded flex-fill text-center"
+                        style="cursor:pointer;" onclick="selectRole('STUDENT')">
+                        <input class="form-check-input" type="radio" name="role" id="roleStudent" value="STUDENT"
+                            checked>
+                        <label class="form-check-label fw-semibold d-block" for="roleStudent" style="cursor:pointer;">
+                            🎒 Student
+                        </label>
+                        <small class="text-muted">Registration No.</small>
+                    </div>
+                    <div class="form-check form-check-inline p-3 border rounded flex-fill text-center"
+                        style="cursor:pointer;" onclick="selectRole('PROFESSOR')">
+                        <input class="form-check-input" type="radio" name="role" id="roleProfessor" value="PROFESSOR">
+                        <label class="form-check-label fw-semibold d-block" for="roleProfessor" style="cursor:pointer;">
+                            👨‍💼 Professor
+                        </label>
+                        <small class="text-muted">Faculty ID</small>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- Step 2: Personal Details -->
+            <p class="fw-semibold mb-3"><span class="step-badge">2</span>Personal Details</p>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="name" required placeholder="Jane Doe">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" name="email" required placeholder="jane@university.edu">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" id="loginIdLabel">Registration Number <span
+                            class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="loginId" id="loginIdInput" required
+                        placeholder="REG/2024/001" style="text-transform:uppercase;" title="This will be your login ID">
+                    <small class="text-muted" id="loginIdHint">You'll use this to log in instead of email.</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Department</label>
+                    <input type="text" class="form-control" name="department" placeholder="Computer Science">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" name="password" required placeholder="••••••••"
+                        minlength="6">
+                </div>
+            </div>
+
+            <!-- Step 3 (Professors only): Expertise Domains -->
+            <div id="domainSection" style="display:none;">
+                <hr class="section-divider">
+                <p class="fw-semibold mb-2">
+                    <span class="step-badge">3</span>Expertise Domains
+                    <span class="badge bg-secondary ms-2" id="domainBadge">0 selected</span>
+                </p>
+                <p class="text-muted small mb-3">Select the areas you specialize in. Used for AI mentor matching.</p>
+
+                <input type="text" class="form-control form-control-sm mb-2" placeholder="🔍 Filter domains..."
+                    oninput="filterChips(this.value)">
+
+                <div class="domain-grid" id="domainGrid">
+                    <div th:each="domain : ${allDomains}" class="domain-chip" th:id="'chip_' + ${domain}"
+                        onclick="toggleChip(this)">
+                        <input type="checkbox" name="domains" th:value="${domain}">
+                        <span th:text="${domain}"></span>
+                    </div>
+                </div>
+                <div class="mt-2 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAllChips()">Select
+                        All</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                        onclick="clearAllChips()">Clear</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mt-4 fw-semibold">
+                <i class="bi bi-person-plus me-1"></i> Create Account
+            </button>
+        </form>
+        <p class="text-center mt-3">Already have an account? <a th:href="@{/login}">Login here</a></p>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            document.getElementById('role' + (role === 'STUDENT' ? 'Student' : 'Professor')).checked = true;
+            const idLabel = document.getElementById('loginIdLabel');
+            const idInput = document.getElementById('loginIdInput');
+            const idHint = document.getElementById('loginIdHint');
+            const domainSection = document.getElementById('domainSection');
+
+            if (role === 'PROFESSOR') {
+                idLabel.innerHTML = 'Faculty ID <span class="text-danger">*</span>';
+                idInput.placeholder = 'FAC/CS/2024/001';
+                idHint.textContent = "Your faculty ID will be used to log in.";
+                domainSection.style.display = 'block';
+            } else {
+                idLabel.innerHTML = 'Registration Number <span class="text-danger">*</span>';
+                idInput.placeholder = 'REG/2024/001';
+                idHint.textContent = "You'll use this to log in instead of email.";
+                domainSection.style.display = 'none';
+            }
+        }
+
+        function toggleChip(chip) {
+            chip.classList.toggle('selected');
+            chip.querySelector('input[type=checkbox]').checked = chip.classList.contains('selected');
+            updateBadge();
+        }
+
+        function updateBadge() {
+            const count = document.querySelectorAll('.domain-chip.selected').length;
+            document.getElementById('domainBadge').textContent = count + ' selected';
+        }
+
+        function filterChips(query) {
+            document.querySelectorAll('.domain-chip').forEach(chip => {
+                const text = chip.querySelector('span').textContent.toLowerCase();
+                chip.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        function selectAllChips() {
+            document.querySelectorAll('.domain-chip').forEach(chip => {
+                if (chip.style.display !== 'none') {
+                    chip.classList.add('selected');
+                    chip.querySelector('input').checked = true;
+                }
+            });
+            updateBadge();
+        }
+
+        function clearAllChips() {
+            document.querySelectorAll('.domain-chip').forEach(chip => {
+                chip.classList.remove('selected');
+                chip.querySelector('input').checked = false;
+            });
+            updateBadge();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

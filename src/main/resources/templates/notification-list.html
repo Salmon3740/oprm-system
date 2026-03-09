@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">My Personal Notifications</h2>
+            <div class="list-group">
+                <div th:each="notif : ${notifications}"
+                    class="list-group-item list-group-item-action p-3 mb-2 shadow-sm border-0 glass-panel">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold text-primary"
+                            th:text="${notif.type != null ? notif.type : 'System Alert'}">Notification Title</h6>
+                        <small class="text-muted" th:text="${notif.createdAt}">3 days ago</small>
+                    </div>
+                    <p class="mb-1" th:text="${notif.message}">Notification content goes here.</p>
+                </div>
+                <div th:if="${#lists.isEmpty(notifications)}" class="text-center p-5">
+                    <p class="text-muted">You have no new notifications.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

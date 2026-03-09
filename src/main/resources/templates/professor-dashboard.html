@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">Professor Dashboard</h2>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card p-4 text-center">
+                        <h3 class="text-primary fw-bold" th:text="${requestCount != null ? requestCount : '0'}">0</h3>
+                        <p class="text-muted">New Project Requests</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 text-center">
+                        <h3 class="text-success fw-bold" th:text="${menteeCount != null ? menteeCount : '0'}">0</h3>
+                        <p class="text-muted">Total Mentees</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card p-4">
+                        <h4 class="fw-bold mb-4">Pending Mentorship Requests</h4>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Project Title</th>
+                                    <th>Domains</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="request : ${pendingRequests}">
+                                    <td th:text="${request.student.user.name}">Student Name</td>
+                                    <td th:text="${request.title}">Project Title</td>
+                                    <td th:text="${request.detectedDomains}">Domains</td>
+                                    <td>
+                                        <form th:action="@{'/api/professors/accept-mentorship/' + ${request.projectId}}"
+                                            method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                                        </form>
+                                        <a th:href="@{'/projects/' + ${request.projectId}}"
+                                            class="btn btn-sm btn-outline-primary ms-2">Details</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(pendingRequests)}">
+                                    <td colspan="4" class="text-center text-muted">No pending requests.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">My Submitted Projects</h2>
+            <div class="row g-4">
+                <div th:each="project : ${projects}" class="col-md-6">
+                    <div class="card h-100 p-4 shadow-sm border-0">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h4 class="fw-bold text-primary mb-0" th:text="${project.title}">Project Title</h4>
+                            <span class="badge"
+                                th:classappend="${project.status.name() == 'SUBMITTED' ? 'bg-warning' : 'bg-success'}"
+                                th:text="${project.status}">Status</span>
+                        </div>
+                        <p class="text-muted mb-3" th:text="${#strings.abbreviate(project.description, 120)}">Short
+                            description...</p>
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-1">Detected Domains:</small>
+                            <span th:each="domain : ${#strings.arraySplit(project.detectedDomains, ',')}"
+                                class="badge bg-light text-dark me-1 border" th:text="${domain}">AI</span>
+                        </div>
+                        <div class="mt-auto pt-3 border-top">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{'/projects/' + ${project.projectId}}"
+                                    class="btn btn-outline-primary btn-sm flex-grow-1 me-2">View Project Details</a>
+                                <form th:action="@{'/projects/' + ${project.projectId} + '/delete'}" method="post"
+                                    onsubmit="return confirm('Delete this project?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(projects)}" class="col-12 text-center p-5">
+                    <p class="text-muted">You haven't submitted any projects yet.</p>
+                    <a href="/projects/submit" class="btn btn-primary">Submit Now</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

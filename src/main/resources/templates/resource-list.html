@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head}"></head>
+
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    <div th:replace="~{layout :: sidebar}"></div>
+
+    <main class="main-content">
+        <div class="container-fluid">
+            <h2 class="mb-4 fw-bold">Resource Library</h2>
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${successMessage}">Success!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${errorMessage}">Error!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div th:if="${#authorization.expression('hasAnyRole(''PROFESSOR'', ''ADMIN'')')}"
+                class="card p-4 mb-4 glass-panel border-primary">
+                <h5 class="fw-bold mb-3">Add New Resource</h5>
+                <form action="/resources" method="post" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="name" class="form-control" placeholder="Resource Name" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="resourceType" class="form-control">
+                            <option value="RESEARCH_PAPER">Research Paper</option>
+                            <option value="DATASET">Dataset</option>
+                            <option value="GUIDE">Guide</option>
+                            <option value="TEMPLATE">Template</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="domain" class="form-control" placeholder="Target Domain">
+                    </div>
+                    <div class="col-md-12">
+                        <input type="url" name="link" class="form-control" placeholder="Resource Link (URL)" required>
+                    </div>
+                    <div class="col-md-12">
+                        <textarea name="description" class="form-control" rows="2"
+                            placeholder="Brief Description"></textarea>
+                    </div>
+                    <div class="col-md-12 text-end">
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">Post Resource</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card p-4">
+                        <h5 class="fw-bold mb-3">Filter by Domain</h5>
+                        <div class="form-check" th:each="domain : ${domains}">
+                            <input class="form-check-input" type="checkbox" th:value="${domain}" th:id="${domain}">
+                            <label class="form-check-label" th:for="${domain}" th:text="${domain}">Domain</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row g-4 text-center py-5" id="no-resources-msg" style="display: none;">
+                        <p class="text-muted">No resources match the selected filters.</p>
+                    </div>
+                    <div class="row g-4" id="resource-container">
+                        <div class="col-md-6 resource-card-container" th:each="resource : ${resources}"
+                            th:data-domain="${resource.domain}">
+                            <div class="card p-4 h-100 shadow-sm border-0">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h5 class="fw-bold text-primary mb-0" th:text="${resource.name}">Resource Name</h5>
+                                    <span class="badge bg-secondary" th:text="${resource.resourceType}">Type</span>
+                                </div>
+                                <p class="text-muted mb-3" th:if="${resource.domain != null}">
+                                    <small><i class="fw-bold">Domain:</i> <span
+                                            th:text="${resource.domain}"></span></small>
+                                </p>
+                                <p class="text-muted small mb-4" th:text="${resource.description}">Description</p>
+                                <div class="mt-auto pt-3 border-top">
+                                    <div class="d-flex justify-content-between gap-2">
+                                        <a th:if="${resource.link != null}" th:href="${resource.link}" target="_blank"
+                                            class="btn btn-outline-primary btn-sm flex-fill">View</a>
+                                        <form th:if="${#authorization.expression('hasRole(''STUDENT'')')}"
+                                            th:action="@{'/resources/' + ${resource.resourceId} + '/request'}"
+                                            method="post" class="flex-fill m-0 w-100">
+                                            <button type="submit" class="btn btn-success btn-sm w-100">Request
+                                                Access</button>
+                                        </form>
+                                        <button type="button"
+                                            th:if="${#authorization.expression('hasRole(''PROFESSOR'')')}"
+                                            class="btn btn-info btn-sm flex-fill text-white w-100"
+                                            th:data-res-id="${resource.resourceId}" th:data-res-name="${resource.name}"
+                                            onclick="openShareModal(this.getAttribute('data-res-id'), this.getAttribute('data-res-name'))">
+                                            <i class="fas fa-share me-1"></i>Share
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('.form-check-input');
+            const cards = document.querySelectorAll('.resource-card-container');
+            const noMsg = document.getElementById('no-resources-msg');
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const selectedDomains = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+                    let visibleCount = 0;
+                    cards.forEach(card => {
+                        const domain = card.getAttribute('data-domain');
+                        // simple match: if no selection, show all. If selected, check if resource domain exactly matches or contains it.
+                        if (selectedDomains.length === 0 || (domain && selectedDomains.some(d => domain.includes(d)))) {
+                            card.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    noMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+                });
+            });
+        });
+    </script>
+    <!-- Share Resource Modal -->
+    <div class="modal fade" id="shareResourceModal" tabindex="-1" aria-labelledby="shareResourceModalLabel"
+        aria-hidden="true" th:if="${#authorization.expression('hasRole(''PROFESSOR'')')}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary" id="shareResourceModalLabel">Share Resource</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">Select a mentee's project to share <strong><span
+                                id="shareResourceName"></span></strong> with:</p>
+                    <div id="projectList" class="list-group list-group-flush border rounded">
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                            <p class="mb-0">Loading projects...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const shareModalEl = document.getElementById('shareResourceModal');
+            let shareModal;
+            if (shareModalEl) {
+                // Initialize modal if running Bootstrap 5
+                if (typeof bootstrap !== 'undefined') {
+                    shareModal = new bootstrap.Modal(shareModalEl);
+                }
+            }
+
+            window.openShareModal = function (resourceId, resourceName) {
+                document.getElementById('shareResourceName').textContent = resourceName;
+                const projectList = document.getElementById('projectList');
+                projectList.innerHTML = '<div class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin fa-2x mb-2"></i><p class="mb-0">Loading projects...</p></div>';
+                if (shareModal) shareModal.show();
+
+                fetch('/api/chat/my-projects')
+                    .then(response => response.json())
+                    .then(projects => {
+                        if (projects.length === 0) {
+                            projectList.innerHTML = '<div class="text-center py-4 text-muted">No mentees/projects found.</div>';
+                            return;
+                        }
+                        projectList.innerHTML = '';
+                        projects.forEach(project => {
+                            const btn = document.createElement('button');
+                            btn.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3';
+                            btn.innerHTML = `
+                                <div>
+                                    <div class="fw-bold mb-1">${project.title}</div>
+                                    <small class="text-muted"><i class="fas fa-user-graduate me-1"></i>${project.student.user.name}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill p-2"><i class="fas fa-share text-white"></i></span>
+                            `;
+                            btn.onclick = () => shareResource(project.projectId, resourceId);
+                            projectList.appendChild(btn);
+                        });
+                    }).catch(error => {
+                        projectList.innerHTML = '<div class="text-center py-4 text-danger">Error loading projects.</div>';
+                    });
+            };
+
+            window.shareResource = function (projectId, resourceId) {
+                const formData = new FormData();
+                formData.append('resourceId', resourceId);
+
+                fetch(`/api/chat/project/${projectId}/resource`, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        if (shareModal) shareModal.hide();
+                        window.location.href = '/projects/' + projectId;
+                    } else {
+                        alert('Failed to share resource.');
+                    }
+                }).catch(error => {
+                    alert('Error sharing resource.');
+                });
+            };
+        });
+    </script>
+</body>
+
+</html>
